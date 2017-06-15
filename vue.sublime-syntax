@@ -1,0 +1,109 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Better Vue Component
+file_extensions:
+  - vue
+scope: text.html.vue
+
+variables:
+  attribute_name: '[a-zA-Z_\-][a-zA-Z0-9_\-]*(?![a-zA-Z0-9_\-])'
+  js_identifier: '(?!=[a-zA-Z0-9_$])[a-zA-Z_$][a-zA-Z0-9_$]*(?![a-zA-Z0-9_$])'
+
+contexts:
+  tag-staff:
+    - scope: entity.other.attribute-name.html
+      match: '{{attribute_name}}'
+      set:
+        - match: '='
+          set:
+            - scope: punctuation.definition.string.begin.html
+              match: '"'
+              set:
+                - meta_scope: string.quoted.double.html
+                - scope: punctuation.definition.string.end.html
+                  match: '"'
+                  set: tag-staff
+            - scope: string.unquoted.html
+              match: '{{attribute_name}}(?!\s*=)'
+              set: tag-staff
+            - match: '(?=\S)'
+              set: tag-staff
+        - match: '(?=\S)'
+          set: tag-staff
+
+    - scope: punctuation.definition.tag.end.html
+      match: '>'
+      pop: true
+
+  scss-contents:
+    - include: scope:source.scss
+
+  js-expr-contents:
+    - include: scope:source.js#expressions
+
+  test-js-expr-context:
+    - match: ''
+      set: js-expr-contents
+      with_prototype:
+        - match: '(?=</([^>]*)>)'
+          pop: true
+
+  any-tag-end:
+    - scope: meta.tag.custom.end.html
+      match: '(</)([^>]*)(>)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.custom.html
+        3: punctuation.definition.tag.end.html
+      pop: true
+
+  style-end:
+    - scope: meta.tag.style.end.html
+      match: '(</)(style)(>)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.style.html
+        3: punctuation.definition.tag.end.html
+      pop: true
+
+  style-scss-context:
+    - match: ''
+      set: scss-contents
+      with_prototype:
+        - match: '(?=</style>)'
+          pop: true
+
+  meta-custom-begin:
+    - meta_scope: meta.tag.custom.begin.html
+    - match: ''
+      pop: true
+
+  meta-style-begin:
+    - meta_scope: meta.tag.style.begin.html
+    - match: ''
+      pop: true
+
+  main:
+    - match: '(<)((?:router-link)\b)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.custom.html
+      push: [any-tag-end, test-js-expr-context, meta-custom-begin, tag-staff]
+
+    - match: '(<)((?:style)\b)(?=[^>]+\b(?:lang)="scss"[^>]*>)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.style.html
+      push: [style-end, style-scss-context, meta-style-begin, tag-staff]
+
+    - scope: support.function.vue
+      match: '\{\{'
+      push:
+        - scope: variable.other.vue
+          match: '{{js_identifier}}'
+        - scope: support.function.vue
+          match: '\}\}'
+          pop: true
+
+    - include: scope:text.html.basic
