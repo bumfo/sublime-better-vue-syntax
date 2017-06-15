@@ -126,9 +126,11 @@ contexts:
       pop: true
 
   js-expr-contents:
+    - meta_content_scope: source.js.embedded.html
     - include: scope:source.js#expressions
 
   scss-contents:
+    - meta_content_scope: source.scss.embedded.html
     - include: scope:source.scss
 
   test-js-expr-context:
