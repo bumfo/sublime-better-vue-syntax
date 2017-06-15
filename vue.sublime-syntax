@@ -27,14 +27,14 @@ contexts:
       captures:
         1: punctuation.definition.tag.begin.html
         2: entity.name.tag.custom.html
-      push: [meta-custom-begin, tag-staff]
+      push: [meta-custom-begin, tag-stuff]
 
   style-tags:
     - match: '(<)((?:style)\b)(?=[^>]+\b(?:lang)="scss"[^>]*>)'
       captures:
         1: punctuation.definition.tag.begin.html
         2: entity.name.tag.style.html
-      push: [style-end, style-scss-context, meta-style-begin, tag-staff]
+      push: [style-end, style-scss-context, meta-style-begin, tag-stuff]
 
   vue-template-tags:
     - scope: support.function.vue
@@ -46,10 +46,48 @@ contexts:
           match: '\}\}'
           pop: true
 
-  tag-staff:
+  tag-stuff:
+    - include: tag-stuff-vue-expr-attributes
+    - include: tag-stuff-other-attributes
+    - scope: punctuation.definition.tag.end.html
+      match: '>'
+      pop: true
+
+  tag-stuff-vue-expr-attributes:
+    - scope: entity.other.attribute-name.html
+      match: '(:){{attribute_name}}'
+      captures:
+        1: punctuation.vue.expr
+      push:
+        - match: '='
+          set:
+            - scope: punctuation.definition.string.begin.html
+              match: '"'
+              set: [end-double-quote, js-expr-double-quoted-content]
+              with_prototype:
+                - match: '(?=")'
+                  pop: true
+            - scope: string.unquoted.html
+              match: '{{attribute_name}}(?!\s*=)'
+              pop: true
+            - match: '(?=\S)'
+              pop: true
+        - match: '(?=\S)'
+          pop: true
+
+  js-expr-double-quoted-content:
+    - meta_scope: string.quoted.double.html
+    - include: js-expr-contents
+
+  end-double-quote:
+    - scope: punctuation.definition.string.end.html
+      match: '"'
+      pop: true
+
+  tag-stuff-other-attributes:
     - scope: entity.other.attribute-name.html
       match: '{{attribute_name}}'
-      set:
+      push:
         - match: '='
           set:
             - scope: punctuation.definition.string.begin.html
@@ -58,18 +96,14 @@ contexts:
                 - meta_scope: string.quoted.double.html
                 - scope: punctuation.definition.string.end.html
                   match: '"'
-                  set: tag-staff
+                  pop: true
             - scope: string.unquoted.html
               match: '{{attribute_name}}(?!\s*=)'
-              set: tag-staff
+              pop: true
             - match: '(?=\S)'
-              set: tag-staff
+              pop: true
         - match: '(?=\S)'
-          set: tag-staff
-
-    - scope: punctuation.definition.tag.end.html
-      match: '>'
-      pop: true
+          pop: true
 
   custom-tag-end:
     - scope: meta.tag.custom.end.html
