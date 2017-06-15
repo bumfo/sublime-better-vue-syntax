@@ -47,13 +47,13 @@ contexts:
           pop: true
 
   tag-stuff:
-    - include: tag-stuff-vue-expr-attributes
+    - include: tag-stuff-vue-attributes
     - include: tag-stuff-other-attributes
     - scope: punctuation.definition.tag.end.html
       match: '>'
       pop: true
 
-  tag-stuff-vue-expr-attributes:
+  tag-stuff-vue-attributes:
     - scope: entity.other.attribute-name.html
       match: '(:){{attribute_name}}'
       captures:
