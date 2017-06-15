@@ -59,7 +59,8 @@ contexts:
       captures:
         1: punctuation.vue.expr
       push:
-        - match: '='
+        - scope: punctuation.separator.key-value.html
+          match: '='
           set:
             - scope: punctuation.definition.string.begin.html
               match: '"'
@@ -88,7 +89,8 @@ contexts:
     - scope: entity.other.attribute-name.html
       match: '{{attribute_name}}'
       push:
-        - match: '='
+        - scope: punctuation.separator.key-value.html
+          match: '='
           set:
             - scope: punctuation.definition.string.begin.html
               match: '"'
