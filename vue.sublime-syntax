@@ -11,6 +11,41 @@ variables:
   js_identifier: '(?!=[a-zA-Z0-9_$])[a-zA-Z_$][a-zA-Z0-9_$]*(?![a-zA-Z0-9_$])'
 
 contexts:
+  
+  main:
+    - include: tags
+
+  tags:
+    - include: custom-tags
+    - include: style-tags
+    - include: vue-template-tags
+
+    - include: scope:text.html.basic
+
+  custom-tags:
+    - match: '(<)((?:[a-zA-Z_]+(?:-[a-zA-Z_]+)+)\b)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.custom.html
+      push: [meta-custom-begin, tag-staff]
+
+  style-tags:
+    - match: '(<)((?:style)\b)(?=[^>]+\b(?:lang)="scss"[^>]*>)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.style.html
+      push: [style-end, style-scss-context, meta-style-begin, tag-staff]
+
+  vue-template-tags:
+    - scope: support.function.vue
+      match: '\{\{'
+      push:
+        - scope: variable.other.vue
+          match: '{{js_identifier}}'
+        - scope: support.function.vue
+          match: '\}\}'
+          pop: true
+
   tag-staff:
     - scope: entity.other.attribute-name.html
       match: '{{attribute_name}}'
@@ -36,20 +71,7 @@ contexts:
       match: '>'
       pop: true
 
-  scss-contents:
-    - include: scope:source.scss
-
-  js-expr-contents:
-    - include: scope:source.js#expressions
-
-  test-js-expr-context:
-    - match: ''
-      set: js-expr-contents
-      with_prototype:
-        - match: '(?=</([^>]*)>)'
-          pop: true
-
-  any-tag-end:
+  custom-tag-end:
     - scope: meta.tag.custom.end.html
       match: '(</)([^>]*)(>)'
       captures:
@@ -67,6 +89,19 @@ contexts:
         3: punctuation.definition.tag.end.html
       pop: true
 
+  js-expr-contents:
+    - include: scope:source.js#expressions
+
+  scss-contents:
+    - include: scope:source.scss
+
+  test-js-expr-context:
+    - match: ''
+      set: js-expr-contents
+      with_prototype:
+        - match: '(?=</([^>]*)>)'
+          pop: true
+
   style-scss-context:
     - match: ''
       set: scss-contents
@@ -83,27 +118,3 @@ contexts:
     - meta_scope: meta.tag.style.begin.html
     - match: ''
       pop: true
-
-  main:
-    - match: '(<)((?:router-link)\b)'
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.custom.html
-      push: [any-tag-end, test-js-expr-context, meta-custom-begin, tag-staff]
-
-    - match: '(<)((?:style)\b)(?=[^>]+\b(?:lang)="scss"[^>]*>)'
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.style.html
-      push: [style-end, style-scss-context, meta-style-begin, tag-staff]
-
-    - scope: support.function.vue
-      match: '\{\{'
-      push:
-        - scope: variable.other.vue
-          match: '{{js_identifier}}'
-        - scope: support.function.vue
-          match: '\}\}'
-          pop: true
-
-    - include: scope:text.html.basic
