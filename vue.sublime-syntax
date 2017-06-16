@@ -54,6 +54,8 @@ contexts:
       pop: true
 
   tag-stuff-vue-attributes:
+    - scope: punctuation.vue
+      match: '@'
     - scope: entity.other.attribute-name.html
       match: '(:){{attribute_name}}'
       captures:
