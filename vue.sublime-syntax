@@ -142,12 +142,12 @@ contexts:
   vue-template-tags:
     - scope: support.function.vue
       match: '\{\{'
-      push:
-        - scope: variable.other.vue
-          match: '{{js_identifier}}'
-        - scope: support.function.vue
-          match: '\}\}'
-          pop: true
+      push: [vue-mustache-end, mustache-js-expr-context]
+
+  vue-mustache-end:
+    - scope: support.function.vue
+      match: '\}\}'
+      pop: true
 
   tag-stuff:
     - include: tag-stuff-vue-attributes
@@ -190,7 +190,7 @@ contexts:
       pop: true
 
   js-expr-double-quoted-content:
-    - meta_scope: string.quoted.double.html
+    - meta_scope: meta.string.quoted.double.html
     - include: js-expr-contents
 
   end-double-quote:
@@ -270,6 +270,13 @@ contexts:
       set: js-expr-contents
       with_prototype:
         - match: '(?=</([^>]*)>)'
+          pop: true
+
+  mustache-js-expr-context:
+    - match: ''
+      set: js-expr-contents
+      with_prototype:
+        - match: '(?=\}\})'
           pop: true
 
   style-css-context:
