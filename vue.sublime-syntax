@@ -157,29 +157,37 @@ contexts:
       pop: true
 
   tag-stuff-vue-attributes:
-    - scope: punctuation.vue
-      match: '@'
-    - scope: entity.other.attribute-name.html
+    - scope: entity.other.attribute-name.html storage.type
+      match: '(@){{attribute_name}}'
+      captures:
+        1: punctuation.vue.on
+      push: tag-stuff-attribute-punctuation-and-js-expr-value
+    - scope: entity.other.attribute-name.html keyword.vue.directives
+      match: 'v-(?:for|if|show|model)'
+      push: tag-stuff-attribute-punctuation-and-js-expr-value
+    - scope: entity.other.attribute-name.html meta.vue.v-bind
       match: '(:){{attribute_name}}'
       captures:
         1: punctuation.vue.expr
-      push:
-        - scope: punctuation.separator.key-value.html
-          match: '='
-          set:
-            - scope: punctuation.definition.string.begin.html
-              match: '"'
-              set: [end-double-quote, js-expr-double-quoted-content]
-              with_prototype:
-                - match: '(?=")'
-                  pop: true
-            - scope: string.unquoted.html
-              match: '{{attribute_name}}(?!\s*=)'
+      push: tag-stuff-attribute-punctuation-and-js-expr-value
+
+  tag-stuff-attribute-punctuation-and-js-expr-value:
+    - scope: punctuation.separator.key-value.html
+      match: '='
+      set:
+        - scope: punctuation.definition.string.begin.html
+          match: '"'
+          set: [end-double-quote, js-expr-double-quoted-content]
+          with_prototype:
+            - match: '(?=")'
               pop: true
-            - match: '(?=\S)'
-              pop: true
+        - scope: string.unquoted.html
+          match: '{{attribute_name}}(?!\s*=)'
+          pop: true
         - match: '(?=\S)'
           pop: true
+    - match: '(?=\S)'
+      pop: true
 
   js-expr-double-quoted-content:
     - meta_scope: string.quoted.double.html
@@ -193,24 +201,26 @@ contexts:
   tag-stuff-other-attributes:
     - scope: entity.other.attribute-name.html
       match: '{{attribute_name}}'
-      push:
-        - scope: punctuation.separator.key-value.html
-          match: '='
+      push: tag-stuff-attribute-punctuation-and-value
+
+  tag-stuff-attribute-punctuation-and-value:
+    - scope: punctuation.separator.key-value.html
+      match: '='
+      set:
+        - scope: punctuation.definition.string.begin.html
+          match: '"'
           set:
-            - scope: punctuation.definition.string.begin.html
+            - meta_scope: string.quoted.double.html
+            - scope: punctuation.definition.string.end.html
               match: '"'
-              set:
-                - meta_scope: string.quoted.double.html
-                - scope: punctuation.definition.string.end.html
-                  match: '"'
-                  pop: true
-            - scope: string.unquoted.html
-              match: '{{attribute_name}}(?!\s*=)'
               pop: true
-            - match: '(?=\S)'
-              pop: true
+        - scope: string.unquoted.html
+          match: '{{attribute_name}}(?!\s*=)'
+          pop: true
         - match: '(?=\S)'
           pop: true
+    - match: '(?=\S)'
+      pop: true
 
   custom-tag-end:
     - scope: meta.tag.custom.end.html
