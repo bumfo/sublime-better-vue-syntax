@@ -17,10 +17,32 @@ contexts:
 
   tags:
     - include: custom-tags
+    - include: inline-form-tags
+    - include: block-any-tags
     - include: style-tags
     - include: vue-template-tags
-
     - include: scope:text.html.basic
+
+  meta-custom-begin:
+    - meta_scope: meta.tag.custom.begin.html
+    - match: ''
+      pop: true
+
+  meta-inline-form-begin:
+    - meta_scope: meta.tag.inline.form.html
+    - match: ''
+      pop: true
+
+  meta-block-any-begin:
+    - meta_scope: meta.tag.block.any.html
+    - match: ''
+      pop: true
+
+  meta-style-begin:
+    - meta_scope: meta.tag.style.begin.html
+    - match: ''
+      pop: true
+
 
   custom-tags:
     - match: '(<)((?:[a-zA-Z_]+(?:-[a-zA-Z_]+)+)\b)'
@@ -28,6 +50,20 @@ contexts:
         1: punctuation.definition.tag.begin.html
         2: entity.name.tag.custom.html
       push: [meta-custom-begin, tag-stuff]
+
+  inline-form-tags:
+    - match: '(<)((?:button|input)\b)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.inline.form.html
+      push: [meta-inline-form-begin, tag-stuff]
+
+  block-any-tags:
+    - match: '(<)((?:div)\b)'
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.block.any.html
+      push: [meta-block-any-begin, tag-stuff]
 
   style-tags:
     - match: '(<)((?:style)\b)(?=[^>]+\b(?:lang)="scss"[^>]*>)'
@@ -149,12 +185,3 @@ contexts:
         - match: '(?=</style>)'
           pop: true
 
-  meta-custom-begin:
-    - meta_scope: meta.tag.custom.begin.html
-    - match: ''
-      pop: true
-
-  meta-style-begin:
-    - meta_scope: meta.tag.style.begin.html
-    - match: ''
-      pop: true
