@@ -1,0 +1,15 @@
+<snippet>
+    <content><![CDATA[<template>
+  <div class="${-1:${1/(.+)/$1/}}"></div>
+</template>
+
+<script>
+  import { Vue, Component } from 'vued'
+
+  @Component()
+  export default class ${1:VueComponent} extends Vue {${0:$TM_SELECTED_TEXT}}
+</script>]]></content>
+    <tabTrigger>vue</tabTrigger>
+    <scope>text.html.vue</scope>
+    <description>vue</description>
+</snippet>
