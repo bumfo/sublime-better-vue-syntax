@@ -1,6 +1,6 @@
 <snippet>
     <content><![CDATA[<template>
-  <div class="${1:VueComponent}">
+  <div class="${1:${TM_FILENAME/(.+)\..+|.*/$1/:name}}">
     ${0:$TM_SELECTED_TEXT}
   </div>
 </template>
@@ -9,7 +9,7 @@
   import { Vue, Component } from 'vued'
 
   @Component()
-  export default class ${-1:${1/(.+)/$1/}} extends Vue {}
+  export default class ${1} extends Vue {}
 </script>]]></content>
     <tabTrigger>vue</tabTrigger>
     <scope>text.html.vue - meta - source</scope>
